@@ -1,8 +1,13 @@
 import Head from "next/head";
+import { useState, useEffect } from "react";
 import Finder from "../components/finder";
-import { getFolderStructure } from "../data/fs";
+import { getFolders } from "../fetch/folders";
 
 export default function Home({ root }) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    getFolders("node_modules").then(setData);
+  }, [setData]);
   return (
     <div>
       <Head>
@@ -11,16 +16,16 @@ export default function Home({ root }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="bg-slate-800 text-white">
-        <Finder root={root} />
+        {data == null || (
+          <>
+            {typeof data == "object" ? (
+              <Finder root={data} />
+            ) : (
+              <div className="text-red-600">error:{data}</div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
-}
-export function getServerSideProps() {
-  const root = getFolderStructure("node_modules");
-  return {
-    props: {
-      root,
-    },
-  };
 }
