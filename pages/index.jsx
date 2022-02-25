@@ -3,11 +3,7 @@ import { useState, useEffect } from "react";
 import Finder from "../components/finder";
 import { getFolders } from "../fetch/folders";
 
-export default function Home({ root }) {
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    getFolders("node_modules").then(setData);
-  }, [setData]);
+export default function Home({ path }) {
   return (
     <div>
       <Head>
@@ -16,16 +12,16 @@ export default function Home({ root }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="bg-slate-800 text-white">
-        {data == null || (
-          <>
-            {typeof data == "object" ? (
-              <Finder root={data} />
-            ) : (
-              <div className="text-red-600">error:{data}</div>
-            )}
-          </>
-        )}
+        <Finder path={path} />
       </div>
     </div>
   );
+}
+
+export function getServerSideProps() {
+  return {
+    props: {
+      path: process.env.BASE || "node_modules",
+    },
+  };
 }

@@ -1,13 +1,19 @@
 import fs from "fs";
 
-function getFolderStructure(folderName) {
+function getFolderStructure(folderName, fillChildren, index = 0, size = 30) {
     if (fs.existsSync(folderName)) {
         if (fs.statSync(folderName).isDirectory()) {
             const dir = fs.readdirSync(folderName);
             return {
                 name: folderName.split("/").splice(-1).pop(),
                 type: "folder",
-                sub: dir.map((child) => getFolderStructure(`${folderName}/${child}`)),
+                sub: fillChildren ?
+                    dir
+                    .slice(index, index + size)
+                    .map((child) =>
+                        getFolderStructure(`${folderName}/${child}`, false)
+                    ) :
+                    [],
             };
         } else {
             return {
